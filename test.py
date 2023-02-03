@@ -4,7 +4,7 @@ from pyecharts.globals import ThemeType
 from pyecharts import options as opts
 #region1、查询语句
 # 累计人数
-sqlAcc = 'select count(id) from t_ht_patient_report where complete_status=1;'
+sqlAcc = 'select count(id) from t_ht_patient_report where complete_status=1 and is_del=0;'
 # 本月人数
 sqlMon = 'select count(id) from t_ht_patient_report where month(now())=month(update_time) and year(now())=year(update_time);'
 # 今日人数
@@ -55,7 +55,7 @@ print('评测结果总体分布：',digResNum)
 
 #3、绘图
 # region实时人数
-daysDis = (
+Dis_Now = (
     Line(init_opts=opts.InitOpts(theme=ThemeType.DARK))
     .add_xaxis([i[1] for i in daysNum])
     .add_yaxis(
@@ -75,11 +75,14 @@ daysDis = (
         #y轴
         yaxis_opts=opts.AxisOpts(
             type_="value",
+            #横向参考线设置
             splitline_opts=opts.SplitLineOpts(is_show=False),
+            #y轴的刻度线
             axistick_opts=opts.AxisTickOpts(is_show=True)
         ),
         #x轴
         xaxis_opts=opts.AxisOpts(type_="category",boundary_gap=False),
+        #放缩与平移
         datazoom_opts=opts.DataZoomOpts(is_show=True,
                                         is_realtime=True,#是否实时更新，False则拖动完成后更新
                                         orient='horizontal',#横向展示拖动
@@ -89,13 +92,13 @@ daysDis = (
                                         )
     )
     .set_colors(['#467897'])
-    .render("daysDis.html")
+    .render("Dis_Now.html")
 )
 
 # endregion
 
 # region性别、年龄分布
-sexDisPic = (
+Dis_SexAge = (
     Pie(init_opts=opts.InitOpts(theme=ThemeType.DARK))
     .add(
         '性别',
@@ -138,12 +141,12 @@ sexDisPic = (
                      }
     )
     .set_colors(['#C99E8C','#465E65','#467897','#E7CD79','#DCD2C6','#800020'])
-    .render("sexDis.html")
+    .render("Dis_SexAge.html")
 )
 #endregion
 
 # region评测结果总体分布
-digResDis = (
+Dis_AllDig = (
     Bar(init_opts=opts.InitOpts(theme=ThemeType.DARK,width='1000'))
     .add_xaxis([i[0] for i in digResNum[:50]])
     .add_yaxis("",[i[1] for i in digResNum[:50]])
@@ -168,7 +171,7 @@ digResDis = (
         label_opts=opts.LabelOpts(is_show=False),
     )
     .set_colors('#467897')
-    .render("digResDis.html")
+    .render("Dis_AllDig.html")
 )
 
 #endregion
